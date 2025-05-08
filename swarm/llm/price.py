@@ -5,6 +5,7 @@ from swarm.utils.log import swarmlog
 from swarm.utils.globals import Cost, PromptTokens, CompletionTokens
 
 # GPT-4:  https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo
+# GPT-4o-mini: https://platform.openai.com/docs/models/gpt-4o-mini
 # GPT3.5: https://platform.openai.com/docs/models/gpt-3-5
 # DALL-E: https://openai.com/pricing
 
@@ -14,7 +15,14 @@ def cost_count(response, model_name):
     completion_len: int
     price: float
 
-    if "gpt-4" in model_name:
+    
+    if "gpt-4o" in model_name:
+        branch = "gpt-4o"
+        prompt_len = response.usage.prompt_tokens
+        completion_len = response.usage.completion_tokens
+        price = prompt_len * OPENAI_MODEL_INFO[branch][model_name]["input"] /1000 + \
+            completion_len * OPENAI_MODEL_INFO[branch][model_name]["output"] /1000
+    elif "gpt-4" in model_name:
         try:
             branch = "gpt-4"
             prompt_len = response.usage.prompt_tokens
@@ -101,6 +109,13 @@ OPENAI_MODEL_INFO ={
             "training": "Sep 2021", 
             "input": 0.06, 
             "output": 0.12
+        }
+    },
+    "gpt-4o": { 
+        "gpt-4o-mini": {
+            "context window": 128000,
+            "input": 0.00015,
+            "output": 0.0006
         }
     },
     "gpt-3.5": {

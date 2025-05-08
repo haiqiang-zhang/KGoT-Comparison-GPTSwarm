@@ -34,7 +34,7 @@ class WebSearch(Node):
         return self.__class__.__name__
     
     def _get_searcher(self):
-        load_dotenv()
+        load_dotenv(override=True)
         if os.getenv("BING_API_KEY"):
             return BingSearchEngine()
         if os.getenv("SEARCHAPI_API_KEY"):

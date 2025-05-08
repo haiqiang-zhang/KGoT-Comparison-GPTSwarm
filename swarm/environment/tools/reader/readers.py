@@ -39,7 +39,7 @@ from swarm.utils.log import swarmlog, logger
 from swarm.utils.globals import Cost
 
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 import aiohttp
 import requests
 from openai import OpenAI, AsyncOpenAI

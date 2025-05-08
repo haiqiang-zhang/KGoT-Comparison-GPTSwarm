@@ -55,7 +55,8 @@ async def main():
     log_file_path = initialize_log_file("GAIA", Time.instance().value)
 
     if args.config:
-        config_args = YAMLReader.parse(args.config, return_str=False)
+        yaml_reader = YAMLReader()
+        config_args = yaml_reader.parse(args.config, return_str=False)
         for key, value in config_args.items():
             setattr(args, key, value)
 
@@ -98,6 +99,7 @@ async def main():
             continue
 
         start_time = time.time()
+        item = item["row"]
         task = item["Question"]
         files = [os.path.join(args.dataset_files, item["file_name"])] if item["file_name"] else item["file_name"]
         ground_truth = item["Final answer"]
@@ -117,6 +119,7 @@ async def main():
         # print("-----")
 
         # Agent
+        print(inputs)
         answer = await agent.run(inputs=inputs)
         answer = answer[-1].split("FINAL ANSWER: ")[-1]
 

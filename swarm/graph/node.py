@@ -111,6 +111,7 @@ class Node(ABC):
         self.outputs = []
         tasks = []
         if not self.inputs and self.predecessors:
+            print(f"predecessors: {self.predecessors}")
             if self.combine_inputs_as_one:
                 combined_inputs = []
                 for predecessor in self.predecessors:
@@ -125,6 +126,7 @@ class Node(ABC):
                         for predecessor_output in predecessor_outputs:
                             tasks.append(asyncio.create_task(self._execute(predecessor_output, **kwargs)))
         elif self.inputs:
+            print(f"inputs: {self.inputs}")
             tasks = [asyncio.create_task(self._execute(input, **kwargs)) for input in self.inputs]
         else:
             warnings.warn("No input received.")
@@ -138,7 +140,10 @@ class Node(ABC):
                         result = [result]
                     self.outputs.extend(result)
                 else:
-                    logger.error(f"Node {type(self).__name__} failed to execute due to: {result.__class__.__name__}: {result}")
+                    import traceback
+                    error_details = traceback.format_exception(type(result), result, result.__traceback__)
+                    error_message = ''.join(error_details)
+                    logger.error(f"Node {type(self).__name__} failed to execute with error:\n{error_message}")
 
     @abstractmethod
     async def _execute(self, input, **kwargs):

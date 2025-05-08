@@ -11,7 +11,7 @@ from swarm.llm.visual_llm import VisualLLM
 from swarm.llm.visual_llm_registry import VisualLLMRegistry
 from swarm.utils.log import logger
 
-load_dotenv()
+load_dotenv(override=True)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 

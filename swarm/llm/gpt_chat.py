@@ -20,7 +20,7 @@ from swarm.llm.llm_registry import LLMRegistry
 LM_STUDIO_URL = "http://localhost:1234/v1"
 
 
-load_dotenv()
+load_dotenv(override=True)
 OPENAI_API_KEYS=[os.getenv(f"OPENAI_API_KEY")]
 for i in range(10):
     if os.getenv(f"OPENAI_API_KEY{i}"):
