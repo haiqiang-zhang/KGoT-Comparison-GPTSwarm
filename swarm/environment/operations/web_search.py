@@ -35,11 +35,11 @@ class WebSearch(Node):
     
     def _get_searcher(self):
         load_dotenv(override=True)
-        if os.getenv("BING_API_KEY"):
+        if os.getenv("BING_API_KEY") is not None and os.getenv("BING_API_KEY") != "":
             return BingSearchEngine()
-        if os.getenv("SEARCHAPI_API_KEY"):
+        if os.getenv("SEARCHAPI_API_KEY") is not None and os.getenv("SEARCHAPI_API_KEY") != "":
             return SearchAPIEngine()
-        if os.getenv("GOOGLE_API_KEY"):
+        if os.getenv("GOOGLE_API_KEY") is not None and os.getenv("GOOGLE_API_KEY") != "":
             return GoogleSearchEngine()
 
     async def _execute(self, inputs: List[Any] = [], max_keywords: int = 5, **kwargs):

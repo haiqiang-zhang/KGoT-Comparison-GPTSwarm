@@ -1,4 +1,5 @@
 import os
+import time
 import cv2
 import base64
 import requests
@@ -53,11 +54,13 @@ class GPT4VChat(VisualLLM):
         try:
             base64_image = self.base64_img(Path(img))
             api_call = self.prepare_api_call(task, base64_image)
+            start_time = time.time()
             response = requests.post(self.openai_proxy, headers=self.get_headers(), json=api_call)
             out = response.json()
             content = out["choices"][0]["message"]["content"]
             logger.info(content)
-            cost_count(out, self.model_name)
+            end_time = time.time()
+            cost_count(out, self.model_name, start_time, end_time)
             return content
         except Exception as error:
             logger.error(f"Error with the request: {error}")
@@ -83,10 +86,13 @@ class GPT4VChat(VisualLLM):
 
             api_call = self.prepare_api_call(task, base64_frame)
             try:
+                start_time = time.time()
                 response = requests.post(self.openai_proxy, headers=self.get_headers(), json=api_call)
+                end_time = time.time()
                 content = response.json()["choices"][0]["message"]["content"]
                 current_frame_content = f"Frame {idx}'s content: {content}\n"
                 video_summary += current_frame_content
+                cost_count(response, self.model_name, start_time, end_time)
 
                 print(current_frame_content)
 

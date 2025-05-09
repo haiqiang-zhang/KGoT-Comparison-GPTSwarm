@@ -8,9 +8,9 @@ class Singleton:
     _instance = None
 
     @classmethod
-    def instance(cls):
+    def instance(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = cls()
+            cls._instance = cls(*args, **kwargs)
         return cls._instance
     
     def reset(self):
@@ -35,3 +35,7 @@ class Time(Singleton):
 class Mode(Singleton):
     def __init__(self):
         self.value = ""
+
+class UsageStatisticsObject(Singleton):
+    def __init__(self, usage_statistics):
+        self.value = usage_statistics

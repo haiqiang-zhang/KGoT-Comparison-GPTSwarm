@@ -47,6 +47,7 @@ def gpt_chat(
     client = OpenAI(**api_kwargs)
 
     formated_messages = [asdict(message) for message in messages]
+    start_time = time.time()
     response = client.chat.completions.create(model=model,
     messages=formated_messages,
     max_tokens=max_tokens,
@@ -55,12 +56,12 @@ def gpt_chat(
     frequency_penalty=0.0,
     presence_penalty=0.0,
     n=num_comps)
-    
+    end_time = time.time()
     if num_comps == 1:
-        cost_count(response, model)
+        cost_count(response, model, start_time, end_time)
         return response.choices[0].message.content
 
-    cost_count(response, model)
+    cost_count(response, model, start_time, end_time)
 
     return [choice.message.content for choice in response.choices]
 
@@ -86,6 +87,7 @@ async def gpt_achat(
     aclient = AsyncOpenAI(**api_kwargs)
 
     formated_messages = [asdict(message) for message in messages]
+    start_time = time.time()
     try:
         async with async_timeout.timeout(1000):
             response = await aclient.chat.completions.create(model=model,
@@ -99,11 +101,11 @@ async def gpt_achat(
     except asyncio.TimeoutError:
         print('Timeout')
         raise TimeoutError("GPT Timeout")
+    end_time = time.time()
     if num_comps == 1:
-        cost_count(response, model)
+        cost_count(response, model, start_time, end_time)
         return response.choices[0].message.content
-    
-    cost_count(response, model)
+    cost_count(response, model, start_time, end_time)
 
     return [choice.message.content for choice in response.choices]
 

@@ -8,7 +8,7 @@ from loguru import logger
 # from globals import CompletionTokens, PromptTokens, Cost
 from swarm.utils.const import GPTSWARM_ROOT
 
-def configure_logging(print_level: str = "INFO", logfile_level: str = "DEBUG") -> None:
+def configure_logging(print_level: str = "INFO", logfile_level: str = "DEBUG", log_file_path: str = None) -> None:
     """
     Configure the logging settings for the application.
 
@@ -18,7 +18,8 @@ def configure_logging(print_level: str = "INFO", logfile_level: str = "DEBUG") -
     """
     logger.remove()
     logger.add(sys.stderr, level=print_level)
-    logger.add(GPTSWARM_ROOT / 'logs/log.txt', level=logfile_level, rotation="10 MB")
+    logger.add(log_file_path, level=logfile_level, rotation="10 MB")
+    # logger.add(GPTSWARM_ROOT / 'logs/log.txt', level=logfile_level, rotation="10 MB")
 
 def initialize_log_file(experiment_name: str, time_stamp: str) -> Path:
     """
@@ -61,7 +62,6 @@ def swarmlog(sender: str, text: str, cost: float,  prompt_tokens: int, complete_
     logger.info(formatted_message)
 
     try:
-        os.makedirs(log_file_path.parent, exist_ok=True)
         with open(log_file_path, 'a') as file:
             file.write(f"{formatted_message}\n")
     except OSError as error:

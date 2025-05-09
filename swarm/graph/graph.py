@@ -112,6 +112,8 @@ class Graph(ABC):
                   max_tries: int = 3, 
                   max_time: int = 600, 
                   return_all_outputs: bool = False) -> List[Any]:
+        
+        print(f"max_tries: {max_tries}, max_time: {max_time}")
  
         def is_node_useful(node):
             if node in self.output_nodes:
@@ -165,7 +167,7 @@ class Graph(ABC):
 
         if len(final_answers) == 0:
             final_answers.append("No answer since there are no inputs provided")
-        return final_answers
+        return final_answers, tries
 
     def find_node(self, id: str):
         for node in self.nodes.values():
