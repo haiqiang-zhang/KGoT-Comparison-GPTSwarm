@@ -28,11 +28,11 @@ class GoogleSearchEngine():
         self.service = build("customsearch", "v1", developerKey=self.api_key)
         
     def search(self, query: str, num: int = 3):
-        # try:
-        res = self.service.cse().list(q=query, cx=self.cse_id, num=num).execute()
-        return '\n'.join([item['snippet'] for item in res['items']])
-        # except:
-        #     return 'Cannot get search results from Google API'
+        try:
+            res = self.service.cse().list(q=query, cx=self.cse_id, num=num).execute()
+            return '\n'.join([item['snippet'] for item in res['items']])
+        except:
+            return 'Cannot get search results from Google API'
 
 class SearchAPIEngine():
 
