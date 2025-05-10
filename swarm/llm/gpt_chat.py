@@ -18,7 +18,7 @@ from swarm.llm.llm_registry import LLMRegistry
 
 
 LM_STUDIO_URL = "http://localhost:1234/v1"
-
+OLLAMA_URL = "http://localhost:11434/v1"
 
 load_dotenv(override=True)
 OPENAI_API_KEYS=[os.getenv(f"OPENAI_API_KEY")]
@@ -41,6 +41,8 @@ def gpt_chat(
     api_kwargs: Dict[str, Any]
     if model == "lmstudio":
         api_kwargs = dict(base_url=LM_STUDIO_URL)
+    elif model == "ollama":
+        api_kwargs = dict(base_url=OLLAMA_URL)
     else:
         api_key = random.sample(OPENAI_API_KEYS, 1)[0]
         api_kwargs = dict(api_key=api_key)
