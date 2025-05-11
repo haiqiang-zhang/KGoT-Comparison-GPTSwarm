@@ -83,9 +83,11 @@ async def gpt_achat(
     api_kwargs: Dict[str, Any]
     if model == "lmstudio":
         api_kwargs = dict(base_url=LM_STUDIO_URL)
-    else:
+    elif model.startswith("gpt"):
         api_key = random.sample(OPENAI_API_KEYS, 1)[0]
         api_kwargs = dict(api_key=api_key)
+    else:
+        api_kwargs = dict(base_url=OLLAMA_URL)
     aclient = AsyncOpenAI(**api_kwargs)
 
     formated_messages = [asdict(message) for message in messages]

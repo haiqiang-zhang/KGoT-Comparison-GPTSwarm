@@ -48,11 +48,18 @@ def cost_count(response, model_name, start_time, end_time):
     caller_function_name = "->".join(callers_function_name_list)
     
     if "gpt-4o" in model_name:
-        branch = "gpt-4o"
-        prompt_len = response.usage.prompt_tokens
-        completion_len = response.usage.completion_tokens
-        price = prompt_len * OPENAI_MODEL_INFO[branch][model_name]["input"] /1000 + \
+        try:
+            branch = "gpt-4o"
+            prompt_len = response.usage.prompt_tokens
+            completion_len = response.usage.completion_tokens
+            price = prompt_len * OPENAI_MODEL_INFO[branch][model_name]["input"] /1000 + \
             completion_len * OPENAI_MODEL_INFO[branch][model_name]["output"] /1000
+        except:
+            branch = "gpt-4o"
+            prompt_len = response["usage"]["prompt_tokens"]
+            completion_len = response["usage"]["completion_tokens"]
+            price = prompt_len * OPENAI_MODEL_INFO[branch][model_name]["input"] /1000 + \
+                completion_len * OPENAI_MODEL_INFO[branch][model_name]["output"] /1000
     elif "gpt-4" in model_name:
         try:
             branch = "gpt-4"
