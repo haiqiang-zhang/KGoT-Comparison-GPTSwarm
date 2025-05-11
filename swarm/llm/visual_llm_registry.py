@@ -18,7 +18,7 @@ class VisualLLMRegistry:
     @classmethod
     def get(cls, model_name: Optional[str] = None) -> VisualLLM:
         if model_name is None:
-            model_name = "gpt-4-vision-preview"
+            model_name = "gpt-4o-mini"
 
         if model_name == 'mock':
             model = cls.registry.get(model_name)

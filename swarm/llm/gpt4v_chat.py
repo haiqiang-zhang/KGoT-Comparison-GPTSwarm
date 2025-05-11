@@ -12,8 +12,6 @@ from swarm.llm.visual_llm import VisualLLM
 from swarm.llm.visual_llm_registry import VisualLLMRegistry
 from swarm.utils.log import logger
 
-load_dotenv(override=True)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 @VisualLLMRegistry.register('GPT4VChat')
@@ -29,6 +27,10 @@ class GPT4VChat(VisualLLM):
         self.max_workers = max_workers
         self.max_tokens = max_tokens
         self.openai_proxy = openai_proxy
+        
+        load_dotenv()
+        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 
     def base64_img(self, file_path: Path) -> str:
         with open(file_path, "rb") as image_file:
@@ -55,8 +57,10 @@ class GPT4VChat(VisualLLM):
             base64_image = self.base64_img(Path(img))
             api_call = self.prepare_api_call(task, base64_image)
             start_time = time.time()
+            print(self.OPENAI_API_KEY)
             response = requests.post(self.openai_proxy, headers=self.get_headers(), json=api_call)
             out = response.json()
+            print("image response", out)
             content = out["choices"][0]["message"]["content"]
             logger.info(content)
             end_time = time.time()
@@ -121,5 +125,5 @@ class GPT4VChat(VisualLLM):
     def get_headers(self) -> dict:
         return {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Authorization": f"Bearer {self.OPENAI_API_KEY}",
         }
