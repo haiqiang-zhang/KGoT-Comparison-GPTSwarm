@@ -139,7 +139,22 @@ class Graph(ABC):
             while tries < max_tries:
                 try:
                     await asyncio.wait_for(self.nodes[current_node_id].execute(), timeout=max_time)
-                    break
+                    output_messages = self.nodes[current_node_id].outputs
+                    intermediate_answers = []
+                    if len(output_messages) > 0 and not return_all_outputs:
+                        intermediate_answer = output_messages[-1].get("output", output_messages[-1])
+                        intermediate_answers.append(intermediate_answer)
+                    else:
+                        for output_message in output_messages:
+                            intermediate_answers = output_message.get("output", output_message)
+                    
+                    # if all answers are "unable to ...", retry
+                    if all("unable to" in str(answer) for answer in intermediate_answers):
+                        print(f"Node {current_node_id} unable to process, retrying {tries + 1} out of {max_tries}...")
+                        tries += 1
+                        continue
+                    else:
+                        break
                 except asyncio.TimeoutError:
                     print(f"Node {current_node_id} execution timed out, retrying {tries + 1} out of {max_tries}...")
                 except Exception as e:
