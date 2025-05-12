@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import time
 from openai import OpenAI
 import pdb
 
@@ -43,6 +44,8 @@ load_dotenv(override=True)
 import aiohttp
 import requests
 from openai import OpenAI, AsyncOpenAI
+
+from swarm.llm.price import cost_count
 
 OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
 
@@ -178,14 +181,15 @@ class AudioReader(Reader):
     def parse(file_path: Path) -> str:
         #swarmlog("SYS", f"Transcribing audio file from {file_path}.", Cost.instance().value)
         logger.info(f"Transcribing audio file from {file_path}.")
-        client = OpenAI(api_key=OPENAI_API_KEY)
         try:
-            client = OpenAI()
+            api_key = os.getenv("MULTIMODE_OPENAI_API_KEY")
+            client = OpenAI(api_key=api_key)
             with open(file_path, "rb") as audio_file:
                 transcript = client.audio.translations.create(
                     model="whisper-1",
                     file=audio_file
                 )
+            print("transcript", transcript)
             return transcript.text
         except Exception as e:
             #swarmlog("ERROR", f"Error transcribing audio file: {e}", Cost.instance().value)
@@ -292,18 +296,21 @@ class PythonReader(Reader):
 
 
 class IMGReader(Reader):
-    def parse(self, file_path: Path, task: str = "Describe this image as detail as possible." ) -> str:
+    def parse(self, file_path: Path, task: str = "Describe this image as detail as possible.", llm=None) -> str:
         #swarmlog("SYS", f"Reading image file from {file_path}.", Cost.instance().value)
         logger.info(f"Reading image file from {file_path}.")
-        runner = VisualLLMRegistry.get()
+        if llm is None:
+            runner = VisualLLMRegistry.get()
+        else:
+            runner = VisualLLMRegistry.get(llm)
         answer = runner.gen(task, file_path)
         return answer
 
 class VideoReader(Reader): 
-    def parse(self, file_path: Path, task: str = "Describe this image as detail as possible.", frame_interval: int = 30, used_audio: bool = True) -> list:
+    def parse(self, file_path: Path, task: str = "Describe this image as detail as possible.", frame_interval: int = 30, used_audio: bool = True, llm=None) -> list:
         #swarmlog("SYS", f"Processing video file from {file_path} with frame interval {frame_interval}.", Cost.instance().value)
         logger.info(f"Processing video file from {file_path} with frame interval {frame_interval}.")
-        runner = VisualLLMRegistry.get()
+        runner = VisualLLMRegistry.get(llm)
         answer = runner.gen_video(task, file_path, frame_interval)
 
         if used_audio:
@@ -364,11 +371,11 @@ class FileReader:
         #swarmlog("SYS", f"Setting Reader to {type(self.reader).__name__}", Cost.instance().value)
         logger.info(f"Setting Reader to {type(self.reader).__name__}")
 
-    def read_file(self, file_path: Path, task="describe the file") -> str:
+    def read_file(self, file_path: Path, task="describe the file", llm=None) -> str:
         suffix = '.' + file_path.split(".")[-1]
         self.set_reader(suffix)
         if isinstance(self.reader, IMGReader) or isinstance(self.reader, VideoReader):
-            file_content = self.reader.parse(file_path, task)
+            file_content = self.reader.parse(file_path, task, llm)
         else:
             file_content = self.reader.parse(file_path)
         #swarmlog("SYS", f"Reading file {file_path} using {type(self.reader).__name__}", Cost.instance().value)
@@ -388,10 +395,10 @@ class GeneralReader:
                               'tex', 'zip', 'tar', 'gz', '7z', 'rar'.
                             """
 
-    def read(self, task, file):
+    def read(self, task, file, llm):
 
         files_content = ""
-        file_content = self.file_reader.read_file(file, task)
+        file_content = self.file_reader.read_file(file, task, llm)
         suffix = file.split(".")[-1]
 
         if suffix in ['py', 'java', 'cpp', 'c', 'js', 'css', 'html', 'htm', 'xml']:

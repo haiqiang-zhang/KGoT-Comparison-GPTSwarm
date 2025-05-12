@@ -18,7 +18,7 @@ class LLMRegistry:
     @classmethod
     def get(cls, model_name: Optional[str] = None) -> LLM:
         if model_name is None:
-            model_name = "gpt-4-1106-preview"
+            model_name = "gpt-4o-mini"
 
         if model_name == 'mock':
             model = cls.registry.get(model_name)

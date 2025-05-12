@@ -149,7 +149,7 @@ class Graph(ABC):
                             intermediate_answers = output_message.get("output", output_message)
                     
                     # if all answers are "unable to ...", retry
-                    if all("unable to" in str(answer) for answer in intermediate_answers):
+                    if any("unable to" in str(answer) for answer in intermediate_answers):
                         print(f"Node {current_node_id} unable to process, retrying {tries + 1} out of {max_tries}...")
                         tries += 1
                         continue

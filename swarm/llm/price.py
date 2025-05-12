@@ -85,10 +85,16 @@ def cost_count(response, model_name, start_time, end_time):
         prompt_len = 0
         completion_len = 0
     else:
-        branch = "other"
-        price = 0.0
-        prompt_len = response.usage.prompt_tokens
-        completion_len = response.usage.completion_tokens
+        try:
+            branch = "other"
+            price = 0.0
+            prompt_len = response.usage.prompt_tokens
+            completion_len = response.usage.completion_tokens
+        except:
+            branch = "other"
+            price = 0.0
+            prompt_len = response["usage"]["prompt_tokens"]
+            completion_len = response["usage"]["completion_tokens"]
         
     usage_statistics = UsageStatisticsObject.instance().value
     usage_statistics.log_statistic(

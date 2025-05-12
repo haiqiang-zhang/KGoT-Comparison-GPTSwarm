@@ -12,6 +12,7 @@ from swarm.llm.visual_llm import VisualLLM
 from swarm.llm.visual_llm_registry import VisualLLMRegistry
 from swarm.utils.log import logger
 
+OLLAMA_COMPLETIONS_URL = "http://localhost:11434/v1/chat/completions"
 
 
 @VisualLLMRegistry.register('GPT4VChat')
@@ -21,15 +22,17 @@ class GPT4VChat(VisualLLM):
         model_name: str,
         max_workers: int = 10,
         max_tokens: int = 300,
-        openai_proxy: str = "https://api.openai.com/v1/chat/completions",
     ):
         self.model_name = model_name
         self.max_workers = max_workers
         self.max_tokens = max_tokens
-        self.openai_proxy = openai_proxy
+        if model_name.startswith("gpt"):
+            self.llm_proxy = "https://api.openai.com/v1/chat/completions"
+        else:
+            self.llm_proxy = OLLAMA_COMPLETIONS_URL
         
         load_dotenv()
-        self.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        self.OPENAI_API_KEY = os.getenv("MULTIMODE_OPENAI_API_KEY")
 
 
     def base64_img(self, file_path: Path) -> str:
@@ -57,8 +60,7 @@ class GPT4VChat(VisualLLM):
             base64_image = self.base64_img(Path(img))
             api_call = self.prepare_api_call(task, base64_image)
             start_time = time.time()
-            print(self.OPENAI_API_KEY)
-            response = requests.post(self.openai_proxy, headers=self.get_headers(), json=api_call)
+            response = requests.post(self.llm_proxy, headers=self.get_headers(), json=api_call)
             out = response.json()
             print("image response", out)
             content = out["choices"][0]["message"]["content"]
@@ -91,7 +93,7 @@ class GPT4VChat(VisualLLM):
             api_call = self.prepare_api_call(task, base64_frame)
             try:
                 start_time = time.time()
-                response = requests.post(self.openai_proxy, headers=self.get_headers(), json=api_call)
+                response = requests.post(self.llm_proxy, headers=self.get_headers(), json=api_call)
                 end_time = time.time()
                 content = response.json()["choices"][0]["message"]["content"]
                 current_frame_content = f"Frame {idx}'s content: {content}\n"

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
+from swarm.llm.llm import LLM
 
 
 class VisualLLM(ABC):

@@ -64,7 +64,7 @@ class FileAnalyse(Node):
     async def file_analyse(self, query, files, llm):
         answer = ''
         for file in files:
-            response = reader.read(query, file)
+            response = reader.read(query, file, llm.model_name)
             if not (isinstance(reader.file_reader, IMGReader) or isinstance(reader.file_reader, VideoReader)):
                 prompt = self.prompt_set.get_file_analysis_prompt(query=query, file=response)
                 response = await llm.agen(prompt)
