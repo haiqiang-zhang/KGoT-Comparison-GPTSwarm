@@ -1,3 +1,9 @@
+> [!NOTE]
+> It is a mutated version of GPTSwarm for comparaing the performance of GPTSwarm with the performance of KGoT.
+
+
+
+
 [![Page](https://img.shields.io/badge/Project-Page-lightgreen.svg)](https://gptswarm.org)
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-gold.svg)](https://arxiv.org/abs/2402.16823)
 [![License](https://img.shields.io/badge/License-MIT-orange.svg)](https://github.com/metauto-ai/GPTSwarm/blob/main/LICENSE)
