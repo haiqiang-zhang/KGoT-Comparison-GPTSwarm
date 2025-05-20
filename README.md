@@ -1,5 +1,5 @@
 > [!NOTE]
-> It is a mutated version of GPTSwarm for comparaing the performance of GPTSwarm with the performance of ![KGoT](https://github.com/spcl/knowledge-graph-of-thoughts).
+> It is a mutated version of GPTSwarm for comparaing the performance of GPTSwarm with the performance of [Knowledge Graph of Thoughts (KGoT)](https://github.com/spcl/knowledge-graph-of-thoughts).
 
 
 
